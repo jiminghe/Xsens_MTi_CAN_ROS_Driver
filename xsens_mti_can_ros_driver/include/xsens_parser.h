@@ -55,7 +55,8 @@ struct XsGroupCounter {
 
 struct XsUtcTime
 {
-    uint8_t year = 0;
+    //the raw CAN data gives uint8 year like 23, but we need to show it like 2023
+    uint16_t year = 0;
     uint8_t month = 0;
     uint8_t day = 0;
     uint8_t hour = 0;

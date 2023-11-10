@@ -65,11 +65,14 @@ struct UTCTimePublisher : public PacketCallback
             timeinfo.tm_min = utcTime.minute;
             timeinfo.tm_sec = utcTime.second;
 
+
+            //ROS_INFO("utctime.year: %u", utcTime.year);
+
             // Convert to time_t (seconds since 1st Jan 1970)
             time_t epochSeconds = timegm(&timeinfo);
 
-            // Convert to ros::Time
-            ros::Time rosUtcTime(epochSeconds, utcTime.tenthms*100);
+            // ros::Time takes second and nanosecond, 1 tenth of a millisecond = 100000 nanoseconds
+            ros::Time rosUtcTime(epochSeconds, utcTime.tenthms*100000);
 
             msg.header.stamp = timestamp;
             msg.time_ref = rosUtcTime;

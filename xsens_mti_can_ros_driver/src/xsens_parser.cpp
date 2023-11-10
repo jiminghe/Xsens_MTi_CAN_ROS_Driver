@@ -64,8 +64,17 @@ bool xsutctime_unpack(XsUtcTime &utctime, const struct can_frame &frame)
         std::cerr << "XsUtcTime frame DLC must be at least 8 bytes" << std::endl;
         return false;
     }
-
-    utctime.year = frame.data[0];
+    uint8_t year = frame.data[0];
+    //we need to convert the uint8_t to the full year, for example 23 to 2023
+    //this code is valid till the year of 2100
+    if (year < 70)
+    {
+        utctime.year = 2000 + year;
+    }
+    else
+    {
+        utctime.year = 1900 + year;
+    }
     utctime.month = frame.data[1];
     utctime.day = frame.data[2];
     utctime.hour = frame.data[3];

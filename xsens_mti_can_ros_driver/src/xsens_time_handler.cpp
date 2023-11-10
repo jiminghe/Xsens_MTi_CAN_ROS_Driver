@@ -18,8 +18,9 @@ ros::Time XsensTimeHandler::convertUtcTimeToRosTime(const XsDataPacket &packet)
         timeinfo.tm_sec = packet.utc_time.second;
 
         time_t epochSeconds = timegm(&timeinfo);
-
-        return ros::Time(epochSeconds, 100*packet.utc_time.tenthms);
+        
+        //ros::Time takes second and nanosecond, 1 tenth of a millisecond = 100000 nanoseconds
+        return ros::Time(epochSeconds, 100000*packet.utc_time.tenthms);
     }
     else if (time_option == "mti_sampletime" && packet.containsXsSampleTimeFine)
     {
