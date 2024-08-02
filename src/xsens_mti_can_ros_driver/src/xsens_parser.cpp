@@ -250,16 +250,16 @@ bool xsaltellipsoid_unpack(XsAltitudeEllipsoid &alt, const struct can_frame &fra
         return false;
     }
 
-    uint32_t alt_ellipsoid = 0;
+    int32_t alt_ellipsoid = 0;
     double scale = 1.0 / (1 << 15); // 3.0517578125e-05
 
     // Unpack and assemble alt_ellipsoid
-    alt_ellipsoid |= static_cast<uint32_t>(frame.data[0]) << 24;
-    alt_ellipsoid |= static_cast<uint32_t>(frame.data[1]) << 16;
-    alt_ellipsoid |= static_cast<uint32_t>(frame.data[2]) << 8;
-    alt_ellipsoid |= static_cast<uint32_t>(frame.data[3]);
+    alt_ellipsoid |= static_cast<int32_t>(frame.data[0]) << 24;
+    alt_ellipsoid |= static_cast<int32_t>(frame.data[1]) << 16;
+    alt_ellipsoid |= static_cast<int32_t>(frame.data[2]) << 8;
+    alt_ellipsoid |= static_cast<int32_t>(frame.data[3]);
 
-    alt.alt_ellipsoid = static_cast<double>(alt_ellipsoid * scale);
+    alt.alt_ellipsoid = static_cast<double>(alt_ellipsoid) * scale;
     return true;
 }
 
