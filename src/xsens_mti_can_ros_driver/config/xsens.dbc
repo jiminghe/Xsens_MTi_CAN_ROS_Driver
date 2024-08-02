@@ -148,7 +148,7 @@ BO_ 113 LatLon: 8 Xsens_Sensor
  SG_ longitude : 39|32@0- (1.1920928955e-07,0) [-180|180] "deg" Vector__XXX
 
 BO_ 114 AltitudeEllipsoid: 4 Xsens_Sensor
- SG_ altEllipsoid : 7|32@0+ (3.0517578125e-05,0) [0|50000] "m" Vector__XXX
+ SG_ altEllipsoid : 7|32@0- (3.0517578125e-05,0) [-1000|50000] "m" Vector__XXX
 
 BO_ 115 PositionEcef_X: 4 Xsens_Sensor
  SG_ PositionEcef_X : 7|32@0- (0.00390625,0) [-6500000|6500000] "m" Vector__XXX
