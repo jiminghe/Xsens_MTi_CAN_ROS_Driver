@@ -266,23 +266,24 @@ bool xsaltellipsoid_unpack(XsAltitudeEllipsoid &alt, const struct can_frame &fra
 
 bool xspositionecefX_unpack(double &pos, const struct can_frame &frame)
 {
-    if (frame.can_dlc < 12)
+    if (frame.can_dlc < 4)  // Only need 4 bytes for X component
     {
-        std::cerr << "XsPositionEcef frame DLC must be at least 12 bytes" << std::endl;
+        std::cerr << "XsPositionEcef_X frame DLC must be at least 4 bytes" << std::endl;
         return false;
     }
-
-    uint32_t x = 0;
+    
+    int32_t x = 0;
     double scale = 1.0 / (1 << 8); // 0.00390625
-
-    // Unpack and assemble x
-    x |= static_cast<uint32_t>(frame.data[0]) << 24;
-    x |= static_cast<uint32_t>(frame.data[1]) << 16;
-    x |= static_cast<uint32_t>(frame.data[2]) << 8;
-    x |= static_cast<uint32_t>(frame.data[3]);
-
-    // Convert to double
-    pos = static_cast<double>(x * scale);
+    
+    // Unpack and assemble x (using int32_t for proper sign handling)
+    x |= static_cast<int32_t>(frame.data[0]) << 24;
+    x |= static_cast<int32_t>(frame.data[1]) << 16;
+    x |= static_cast<int32_t>(frame.data[2]) << 8;
+    x |= static_cast<int32_t>(frame.data[3]);
+    
+    // Convert to double (cast first, then multiply)
+    pos = static_cast<double>(x) * scale;
+    
     return true;
 }
 
@@ -293,17 +294,20 @@ bool xsvelocity_unpack(XsVelocity &vel, const struct can_frame &frame)
         std::cerr << "XsVelocity frame DLC must be at least 6 bytes" << std::endl;
         return false;
     }
-
+    
     double scale = 1.0 / (1 << 6); // 0.015625
-
-    float *vel_arr[3] = {&vel.x, &vel.y, &vel.z};
-
-    for (size_t i = 0; i < 3; ++i)
-    {
-        int16_t value = static_cast<int16_t>((frame.data[2 * i] << 8) | frame.data[2 * i + 1]);
-        *vel_arr[i] = static_cast<float>(value * scale);
-    }
-
+    
+    // Process each component (x, y, z)
+    // First parse the bytes into int16_t values (big endian)
+    int16_t velX = static_cast<int16_t>((frame.data[0] << 8) | frame.data[1]);
+    int16_t velY = static_cast<int16_t>((frame.data[2] << 8) | frame.data[3]);
+    int16_t velZ = static_cast<int16_t>((frame.data[4] << 8) | frame.data[5]);
+    
+    // Convert to float with scaling
+    vel.x = static_cast<float>(velX) * scale;
+    vel.y = static_cast<float>(velY) * scale;
+    vel.z = static_cast<float>(velZ) * scale;
+    
     return true;
 }
 
