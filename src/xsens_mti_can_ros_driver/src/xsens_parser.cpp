@@ -218,27 +218,28 @@ bool xslatlon_unpack(XsLatLon &latlon, const struct can_frame &frame)
         std::cerr << "XsLatLon frame DLC must be at least 8 bytes" << std::endl;
         return false;
     }
-
-    uint32_t latitude = 0;
-    uint32_t longitude = 0;
+    
+    int32_t latitude = 0;
+    int32_t longitude = 0;
     double scale_lat = 1.0 / (1 << 24); // 5.9604644775e-08
     double scale_lon = 1.0 / (1 << 23); // 1.1920928955e-07
-
-    // Unpack and assemble latitude
-    latitude |= static_cast<uint32_t>(frame.data[0]) << 24;
-    latitude |= static_cast<uint32_t>(frame.data[1]) << 16;
-    latitude |= static_cast<uint32_t>(frame.data[2]) << 8;
-    latitude |= static_cast<uint32_t>(frame.data[3]);
-
-    // Unpack and assemble longitude
-    longitude |= static_cast<uint32_t>(frame.data[4]) << 24;
-    longitude |= static_cast<uint32_t>(frame.data[5]) << 16;
-    longitude |= static_cast<uint32_t>(frame.data[6]) << 8;
-    longitude |= static_cast<uint32_t>(frame.data[7]);
-
+    
+    // Unpack and assemble latitude (using int32_t for proper sign handling)
+    latitude |= static_cast<int32_t>(frame.data[0]) << 24;
+    latitude |= static_cast<int32_t>(frame.data[1]) << 16;
+    latitude |= static_cast<int32_t>(frame.data[2]) << 8;
+    latitude |= static_cast<int32_t>(frame.data[3]);
+    
+    // Unpack and assemble longitude (using int32_t for proper sign handling)
+    longitude |= static_cast<int32_t>(frame.data[4]) << 24;
+    longitude |= static_cast<int32_t>(frame.data[5]) << 16;
+    longitude |= static_cast<int32_t>(frame.data[6]) << 8;
+    longitude |= static_cast<int32_t>(frame.data[7]);
+    
     // Convert to double
-    latlon.latitude = static_cast<double>(latitude * scale_lat);
-    latlon.longitude = static_cast<double>(longitude * scale_lon);
+    latlon.latitude = static_cast<double>(latitude) * scale_lat;
+    latlon.longitude = static_cast<double>(longitude) * scale_lon;
+    
     return true;
 }
 
